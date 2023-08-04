@@ -521,8 +521,12 @@ open class TextView: UITextView {
     
     // MARK: - Intercept Keystrokes
 
-    public lazy var carriageReturnKeyCommand: UIKeyCommand = {
-        return UIKeyCommand(input: String(.carriageReturn), modifierFlags: .shift, action: #selector(handleShiftEnter(command:)))
+    public lazy var carriageReturnShiftKeyCommand: UIKeyCommand = {
+        return UIKeyCommand(input: String(.carriageReturn), modifierFlags: .shift, action: #selector(insertLineSeperator))
+    }()
+    
+    public lazy var paragraphSeparatorKeyCommand: UIKeyCommand = {
+        return UIKeyCommand(input: String(.paragraphSeparator), modifierFlags: [], action: #selector(insertLineSeperator))
     }()
 
     public lazy var tabKeyCommand: UIKeyCommand = {
@@ -530,23 +534,21 @@ open class TextView: UITextView {
     }()
 
     public lazy var shiftTabKeyCommand: UIKeyCommand = {
-        return  UIKeyCommand(input: String(.tab), modifierFlags: .shift, action: #selector(handleShiftTab(command:)))
+        return UIKeyCommand(input: String(.tab), modifierFlags: .shift, action: #selector(handleShiftTab(command:)))
     }()
 
     override open var keyCommands: [UIKeyCommand]? {
         get {
-            // When the keyboard "enter" key is pressed, the keycode corresponds to .carriageReturn,
-            // even if it's later converted to .lineFeed by default.
-            //
-            return [
-                carriageReturnKeyCommand,
+            [
+                carriageReturnShiftKeyCommand,
+                paragraphSeparatorKeyCommand,
                 shiftTabKeyCommand,
                 tabKeyCommand,
             ]
         }
     }
 
-    @objc func handleShiftEnter(command: UIKeyCommand) {
+    @objc func insertLineSeperator() {
         insertText(String(.lineSeparator))
     }
 
